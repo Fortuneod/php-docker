@@ -1,0 +1,56 @@
+version: '3'
+services:
+    www:
+        depends_on:
+            - db
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - "./:/var/www/html"
+        ports:
+            - 8090:80
+        networks:
+            - phpdocker
+
+    db:
+        image: mysql
+        restart: always
+        environment:
+            MYSQL_DATABASE: php_docker
+            MYSQL_USER: Fortuneod
+            MYSQL_PASSWORD: seyejames@123
+            MYSQL_ROOT_PASSWORD: example
+        volumes:
+         - "./data:/docker-entrypoint-initdb.d"
+        networks:
+            - phpdocker
+            
+            
+    phpmyadmin:
+        depends_on:
+            - db
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8093:80
+        environment:
+            - PMA_HOST=db
+            - PMA_PORT=3306
+        networks:
+            - phpdocker
+            
+    adminer:
+        depends_on:
+            - db
+        image: adminer
+        restart: always
+        ports:
+            - 8095:8080
+        networks:
+            - phpdocker
+            
+networks:
+    phpdocker:
+        driver: bridge
+
+        
